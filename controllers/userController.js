@@ -34,56 +34,42 @@ export const getUser = (req, res, id) => {
 };
 
 // ✅ Create User with Validation
-export const createUser = (req, res) => {
-  let body = "";
-  req.on("data", (chunk) => (body += chunk.toString()));
-  req.on("end", () => {
-    try {
-      const { name, email } = JSON.parse(body);
-      if (!name || !email)
-        return errorHandler(res, 400, "Name and Email are required");
+export const createUser = (req, res, data) => {
+  const { name, email } = data;
+  if (!name || !email) {
+    return errorHandler(res, 400, "Name and Email are required");
+  }
 
-      const users = getUsersFromFile();
-      const newUser = { id: Date.now().toString(), name, email };
-      users.push(newUser);
-      saveUsersToFile(users);
+  const users = getUsersFromFile();
+  const newUser = { id: Date.now().toString(), name, email };
+  users.push(newUser);
+  saveUsersToFile(users);
 
-      res.writeHead(201, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ success: true, data: newUser }));
-    } catch {
-      errorHandler(res, 400, "Invalid JSON format");
-    }
-  });
+  res.writeHead(201, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ success: true, data: newUser }));
 };
 
 // ✅ Update User
-export const updateUser = (req, res, id) => {
-  let body = "";
-  req.on("data", (chunk) => (body += chunk.toString()));
-  req.on("end", () => {
-    try {
-      const { name, email } = JSON.parse(body);
-      const users = getUsersFromFile();
-      const index = users.findIndex((u) => u.id === id);
+export const updateUser = (req, res, id, data) => {
+  const { name, email } = data;
+  const users = getUsersFromFile();
+  const index = users.findIndex((u) => u.id === id);
 
-      if (index === -1) return errorHandler(res, 404, "User not found");
+  if (index === -1) return errorHandler(res, 404, "User not found");
 
-      if (!name && !email)
-        return errorHandler(res, 400, "At least one field is required");
+  if (!name && !email) {
+    return errorHandler(res, 400, "At least one field is required");
+  }
 
-      users[index] = {
-        ...users[index],
-        name: name || users[index].name,
-        email: email || users[index].email,
-      };
-      saveUsersToFile(users);
+  users[index] = {
+    ...users[index],
+    name: name || users[index].name,
+    email: email || users[index].email,
+  };
+  saveUsersToFile(users);
 
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ success: true, data: users[index] }));
-    } catch {
-      errorHandler(res, 400, "Invalid JSON format");
-    }
-  });
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ success: true, data: users[index] }));
 };
 
 // ✅ Delete User
@@ -91,8 +77,9 @@ export const deleteUser = (req, res, id) => {
   const users = getUsersFromFile();
   const updatedUsers = users.filter((u) => u.id !== id);
 
-  if (users.length === updatedUsers.length)
+  if (users.length === updatedUsers.length) {
     return errorHandler(res, 404, "User not found");
+  }
 
   saveUsersToFile(updatedUsers);
 
