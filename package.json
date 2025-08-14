@@ -11,7 +11,8 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "start"
+    "test": "start",
+    "start": "node server.js"
   },
   "devDependencies": {
     "@types/node": "^24.2.1",
