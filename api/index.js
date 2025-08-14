@@ -1,6 +1,6 @@
 import http from "http";
 import dotenv from "dotenv";
-import { userRoutes } from "./routes/userRoutes.js";
+import { userRoutes } from "../routes/userRoutes.js";
 
 dotenv.config();
 
