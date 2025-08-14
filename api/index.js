@@ -1,35 +1,31 @@
-import http from "http";
 import dotenv from "dotenv";
 import { userRoutes } from "../routes/userRoutes.js";
 
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
-
-const server = http.createServer((req, res) => {
-  // Set CORS headers for all requests
-  res.setHeader("Access-Control-Allow-Origin", "*"); // allow all origins
+// This is the function that Vercel will run per request
+export default function handler(req, res) {
+  // Set CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
   );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // Handle preflight OPTIONS requests
+  // Handle OPTIONS preflight
   if (req.method === "OPTIONS") {
-    res.writeHead(204);
+    res.statusCode = 204;
     return res.end();
   }
 
   // Route handling
   if (req.url.startsWith("/api/users")) {
-    userRoutes(req, res);
-  } else {
-    res.writeHead(404, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ success: false, error: "Route not found" }));
+    return userRoutes(req, res); // Pass request to your routes
   }
-});
 
-server.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}/api/users`)
-);
+  // Default 404 response
+  res.statusCode = 404;
+  res.setHeader("Content-Type", "application/json");
+  res.end(JSON.stringify({ success: false, error: "Route not found" }));
+}
