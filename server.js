@@ -9,7 +9,5 @@ const port = process.env.PORT || 5000;
 const server = http.createServer(handler);
 
 server.listen(port, () => {
-  console.log(
-    `Server running locally at http://localhost:${port}/api/users`
-  );
+  console.log(`Server running at http://localhost:${port}/api/users`);
 });
